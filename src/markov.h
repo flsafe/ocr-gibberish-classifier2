@@ -1,7 +1,8 @@
 #ifndef _MARKOV_H
 #define _MARKOV_H
 
-typedef struct MC_Tran	
+typedef struct MC_Transition MC_Transition;
+typedef struct MC_State MC_State;
 
 struct MC_Transition
 {
@@ -29,6 +30,6 @@ int MC_add_trans(char *state, char *next_state);        /* Add transition from s
 
 int MC_get_count(char *state);                          /* Get the count for this state */
 
-MC_Transition *MC_lookup(char *state, char *next_state) /* Retrieve the transition between state and next_state. */ 
+MC_Transition *MC_lookup(char *state, char *next_state); /* Retrieve the transition between state and next_state. */ 
 
 #endif
