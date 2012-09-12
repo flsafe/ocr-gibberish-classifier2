@@ -30,6 +30,6 @@ int MC_add_trans(char *state, char *next_state);        /* Add transition from s
 
 int MC_get_count(char *state);                          /* Get the count for this state */
 
-MC_Transition *MC_lookup(char *state, char *next_state); /* Retrieve the transition between state and next_state. */ 
+MC_Transition *MC_lookup(char *state, char *next_state, int create); /* Retrieve the transition between state and next_state, create if specified. */ 
 
 #endif

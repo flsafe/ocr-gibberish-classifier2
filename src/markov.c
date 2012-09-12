@@ -12,7 +12,7 @@ enum
 	STATE_TAB       = 2047            /* Size of the state hash table */
 };
 
-MC_Transition **trans_state_tab;      /* Transition state hash table, used to define a transition hash table. */
+MC_Transition ***trans_state_tab;      /* Transition state hash table, used to define a transition hash table. */
 
 MC_State **state_tab;                 /* State table used to count the number of times a state has appeared. */
 
@@ -37,6 +37,8 @@ int MC_init(int state_len)
 	state_tab = calloc(STATE_TAB, sizeof(MC_State*));
 	check_mem(state_tab);
 
+	return 1;
+
 error:
 
 	for(i = 0 ; i < TRANS_STATE_TAB_W ; i++){
@@ -49,6 +51,18 @@ error:
 	return 0;
 }
 
+unsigned int hash(char *s, int mod)
+{
+	unsigned int h = 0;
+	int mult = 32, i = 0;
+
+	for(i = 0 ; i < STATE_LEN ; i++){
+		h = mult * h + s[i];
+	}
+
+	return h % mod; 
+}
+
 int MC_add_trans(char *state, char *next_state)
 {
 	return 0;
@@ -59,7 +73,41 @@ int MC_get_count(char *state)
 	return 0;
 }
 
-MC_Transition *MC_lookup(char *state, char *next_state)
+MC_Transition *MC_lookup(char *state, char *next_state, int create)
 {
+	MC_Transition *trans = NULL;
+	unsigned int r,c;
+
+	r = hash(state, TRANS_STATE_TAB_W);
+	c = hash(next_state, TRANS_STATE_TAB_H);
+
+	for(trans = trans_state_tab[r][c] ; trans ; trans = trans->next){
+		if(0 == strncmp(state, trans->state, STATE_LEN) && 0 == strncmp(next_state, trans->state, STATE_LEN)){
+			return trans;
+		}
+	}
+
+	if(create){
+		trans = calloc(1, sizeof(MC_Transition));
+		check_mem(trans);
+
+		trans->state = strndup(state, STATE_LEN);
+		check_mem(trans->state);
+
+		trans->next_state = strndup(next_state, STATE_LEN);
+		check_mem(trans->next_state);
+
+		trans->next = trans_state_tab[r][c];
+		trans_state_tab[r][c] = trans;
+	}
+	
+	return trans;
+
+error:
+
+	if(trans) free(trans);
+	if(trans->state) free(trans->state);
+	if(trans->next_state) free(trans->next_state);
+
 	return NULL;
 }
