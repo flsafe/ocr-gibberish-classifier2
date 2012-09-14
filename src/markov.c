@@ -82,7 +82,7 @@ MC_Transition *MC_lookup(char *state, char *next_state, int create)
 	c = hash(next_state, TRANS_STATE_TAB_H);
 
 	for(trans = trans_state_tab[r][c] ; trans ; trans = trans->next){
-		if(0 == strncmp(state, trans->state, STATE_LEN) && 0 == strncmp(next_state, trans->state, STATE_LEN)){
+		if(0 == strncmp(state, trans->state, STATE_LEN) && 0 == strncmp(next_state, trans->next_state, STATE_LEN)){
 			return trans;
 		}
 	}
@@ -98,6 +98,9 @@ MC_Transition *MC_lookup(char *state, char *next_state, int create)
 		check_mem(trans->next_state);
 
 		trans->next = trans_state_tab[r][c];
+
+		trans->count = 1;
+
 		trans_state_tab[r][c] = trans;
 	}
 	
