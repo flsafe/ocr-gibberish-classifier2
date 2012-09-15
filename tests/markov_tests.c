@@ -36,7 +36,7 @@ char *test_create()
 	t = MC_lookup("abc", "xyz", 1);
 
 	mu_assert(t, "MC_lookup with create failed");
-	mu_assert(1 == t->count, "Initial transition count should be 1");
+	mu_assert(0 == t->count, "Initial transition count should be 0");
 
 	MC_destroy();
 
@@ -53,7 +53,7 @@ char *test_lookup()
 	t = MC_lookup("123", "456", 0);
 
 	mu_assert(t, "MC_lookup failed to return a previously inserted value");
-	mu_assert(1 == t->count, "Look up count should be 1");
+	mu_assert(0 == t->count, "Transition count should be 0");
 
 	MC_destroy();
 

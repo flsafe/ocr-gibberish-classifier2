@@ -169,9 +169,8 @@ MC_Transition *MC_lookup(char *state, char *next_state, int create)
 		trans->next_state = strndup(next_state, STATE_LEN);
 		check_mem(trans->next_state);
 
+		trans->count = 0;
 		trans->next = trans_state_tab[c][r];
-
-		trans->count = 1;
 
 		trans_state_tab[c][r] = trans;
 	}
