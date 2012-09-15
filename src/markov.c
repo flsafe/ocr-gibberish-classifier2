@@ -87,8 +87,56 @@ unsigned int hash(char *s, int mod)
 	return h % mod; 
 }
 
+int count_state(char *state)
+{
+	unsigned int h = 0;
+	MC_State *st = NULL;
+
+
+	h = hash(state, STATE_TAB);
+	for(st = state_tab[h] ; st ; st = st->next){
+		if(0 == strncmp(state, st->state, STATE_LEN)){
+			st->count++;	
+			return 1;
+		}
+	}
+
+	st = calloc(1, sizeof(MC_State));
+	check_mem(st);
+
+	st->state = strndup(state, STATE_LEN);
+	check_mem(st->state);
+	st->next = state_tab[h];
+	state_tab[h] = st;
+
+	return 1;
+error:
+
+	if(st->state) free(st->state);
+	if(st) free(st);
+
+	return 0;
+}
+
 int MC_add_trans(char *state, char *next_state)
 {
+	unsigned int h = 0, r = 0;
+	MC_Transition *t = NULL;
+
+	t = MC_lookup(state, next_state, 1);
+	check(NULL != t, "Failed to lookup transition for %s -> %s", state, next_state);
+	t->count++;
+
+	r = count_state(state);
+	check(r, "Failed to count state: %s", state);
+
+	r = count_state(next_state);
+	check(r, "Failed to count next_state: %s", next_state);
+
+	return 1;
+
+error:
+
 	return 0;
 }
 
