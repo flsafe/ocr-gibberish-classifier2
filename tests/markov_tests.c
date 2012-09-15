@@ -60,6 +60,45 @@ char *test_lookup()
 	return NULL;
 }
 
+char *test_add_trans()
+{
+	MC_Transition *t = NULL;
+
+	MC_init(3);
+	
+	MC_add_trans("123", "456");
+	MC_add_trans("123", "456");
+	MC_add_trans("123", "456");
+
+	t = MC_lookup("123", "456", 0);
+	mu_assert(t, "Failed to look up transition 123 -> 456");
+	mu_assert(3 == t->count, "The transiton 123 -> 456 should have a count of 3");
+
+	MC_destroy();
+
+	return NULL;
+}
+
+char *test_get_count()
+{
+	MC_State *s = NULL;
+
+	MC_init(3);
+
+	MC_add_trans("123", "456");
+	MC_add_trans("123", "abc");
+	MC_add_trans("xyz", "abc");
+
+	mu_assert(2 == MC_get_count("123"), "Count for 123 should be 2");
+	mu_assert(1 == MC_get_count("456"), "Count for 456 should be 1");
+	mu_assert(2 == MC_get_count("abc"), "Count for abc should be 2");
+	mu_assert(1 == MC_get_count("xyz"), "Count for xyz should be 1");
+
+	MC_destroy();
+
+	return NULL;
+}
+
 char *all()
 {
 	mu_suite_start();
@@ -68,6 +107,8 @@ char *all()
 	mu_run_test(test_destroy);
 	mu_run_test(test_create);
 	mu_run_test(test_lookup);
+	mu_run_test(test_add_trans);
+	mu_run_test(test_get_count);
 
 	return NULL;
 }

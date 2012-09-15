@@ -87,7 +87,7 @@ unsigned int hash(char *s, int mod)
 	return h % mod; 
 }
 
-int count_state(char *state)
+MC_State *get_state(char *state, int create)
 {
 	unsigned int h = 0;
 	MC_State *st = NULL;
@@ -96,42 +96,46 @@ int count_state(char *state)
 	h = hash(state, STATE_TAB);
 	for(st = state_tab[h] ; st ; st = st->next){
 		if(0 == strncmp(state, st->state, STATE_LEN)){
-			st->count++;	
-			return 1;
+			return st;
 		}
 	}
 
-	st = calloc(1, sizeof(MC_State));
-	check_mem(st);
+	if(create){
+		st = calloc(1, sizeof(MC_State));
+		check_mem(st);
 
-	st->state = strndup(state, STATE_LEN);
-	check_mem(st->state);
-	st->next = state_tab[h];
-	state_tab[h] = st;
+		st->state = strndup(state, STATE_LEN);
+		check_mem(st->state);
+		st->next = state_tab[h];
+		state_tab[h] = st;
+	}
 
-	return 1;
+	return st;
+
 error:
 
 	if(st->state) free(st->state);
 	if(st) free(st);
 
-	return 0;
+	return st;
 }
 
 int MC_add_trans(char *state, char *next_state)
 {
-	unsigned int h = 0, r = 0;
+	MC_State *st = NULL;
 	MC_Transition *t = NULL;
 
 	t = MC_lookup(state, next_state, 1);
 	check(NULL != t, "Failed to lookup transition for %s -> %s", state, next_state);
 	t->count++;
 
-	r = count_state(state);
-	check(r, "Failed to count state: %s", state);
+	st = get_state(state, 1);
+	check(st, "Failed to count state: %s", state);
+	st->count++;
 
-	r = count_state(next_state);
-	check(r, "Failed to count next_state: %s", next_state);
+	st = get_state(next_state, 1);
+	check(st, "Failed to count next_state: %s", next_state);
+	st->count++;
 
 	return 1;
 
@@ -142,7 +146,12 @@ error:
 
 int MC_get_count(char *state)
 {
-	return 0;
+	MC_State *st = NULL;
+
+	st = get_state(state, 0);
+	if(NULL == st) return 0;
+
+	return st->count;
 }
 
 MC_Transition *MC_lookup(char *state, char *next_state, int create)
