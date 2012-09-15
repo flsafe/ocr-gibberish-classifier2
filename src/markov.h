@@ -26,6 +26,8 @@ struct MC_State
 
 int MC_init(int state_len); /* Initialize the data structures before using the following functions. */
 
+void MC_destroy();           /* Recover the memory allocated by the MC_init function */
+
 int MC_add_trans(char *state, char *next_state);        /* Add transition from state to next_state. */
 
 int MC_get_count(char *state);                          /* Get the count for this state */

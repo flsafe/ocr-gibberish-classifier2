@@ -51,6 +51,30 @@ error:
 	return 0;
 }
 
+void MC_destroy()
+{
+	MC_Transition *trans = NULL, *n = NULL;
+	int c = 0, r = 0;
+
+	for(c = 0 ; c < TRANS_STATE_TAB_W ; c++){
+		for(r = 0 ; r < TRANS_STATE_TAB_H ; r++){
+			trans = trans_state_tab[c][r];
+			while(trans){
+				n = trans->next;
+				if(trans->state) free(trans->state);
+				if(trans->next_state) free(trans->next_state);
+				free(trans);
+				trans = n;
+			}
+			trans_state_tab[c][r] = NULL;
+		}
+		if(trans_state_tab[c]) free(trans_state_tab[c]);
+	}
+
+	if(trans_state_tab) free(trans_state_tab);
+	if(state_tab) free(state_tab);
+}
+
 unsigned int hash(char *s, int mod)
 {
 	unsigned int h = 0;
