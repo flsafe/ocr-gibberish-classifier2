@@ -54,7 +54,8 @@ error:
 void MC_destroy()
 {
 	MC_Transition *trans = NULL, *n = NULL;
-	int c = 0, r = 0;
+	MC_State *st = NULL, *nst = NULL;
+	int c = 0, r = 0, i = 0;
 
 	for(c = 0 ; c < TRANS_STATE_TAB_W ; c++){
 		for(r = 0 ; r < TRANS_STATE_TAB_H ; r++){
@@ -70,8 +71,18 @@ void MC_destroy()
 		}
 		if(trans_state_tab[c]) free(trans_state_tab[c]);
 	}
-
 	if(trans_state_tab) free(trans_state_tab);
+
+
+	for(i = 0 ; i < STATE_TAB ; i++){
+		st = state_tab[i];	
+		while(st){
+			nst = st->next;
+			if(st->state) free(st->state);
+			free(st);
+			st = nst;
+		}
+	}
 	if(state_tab) free(state_tab);
 }
 
