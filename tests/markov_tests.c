@@ -99,6 +99,30 @@ char *test_get_count()
 	return NULL;
 }
 
+char *test_trans_probability()
+{
+	MC_Transition *t = NULL;
+
+	MC_init(3);
+
+	MC_add_trans("abc", "123");
+	MC_add_trans("xyz", "123");
+	MC_add_trans("abc", "hig");
+	MC_add_trans("abc", "123");
+
+	MC_calc_p();
+
+	t = MC_lookup("abc", "123", 0);
+	mu_assert(2.0f/3.0f == t->p, "Probablity of transition abc->123 should be 2/3");
+
+	t = MC_lookup("abc", "hig", 0);
+	mu_assert(1.0f/3.0f == t->p, "Probablity of transition abc->hig should be 1/3");
+
+	MC_destroy();
+
+	return NULL;
+}
+
 char *all()
 {
 	mu_suite_start();
@@ -109,6 +133,7 @@ char *all()
 	mu_run_test(test_lookup);
 	mu_run_test(test_add_trans);
 	mu_run_test(test_get_count);
+	mu_run_test(test_trans_probability);
 
 	return NULL;
 }

@@ -34,4 +34,6 @@ int MC_get_count(char *state);                          /* Get the count for thi
 
 MC_Transition *MC_lookup(char *state, char *next_state, int create); /* Retrieve the transition between state and next_state, create if specified. */ 
 
+void MC_calc_p(); /* Calculate the probabilities for each transition */
+
 #endif

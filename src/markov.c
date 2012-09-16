@@ -133,7 +133,7 @@ error:
 
 int MC_add_trans(char *state, char *next_state)
 {
-	MC_State *st = NULL;
+	MC_State *st = NULL, *nst = NULL;
 	MC_Transition *t = NULL;
 
 	t = MC_lookup(state, next_state, 1);
@@ -144,9 +144,9 @@ int MC_add_trans(char *state, char *next_state)
 	check(st, "Failed to count state: %s", state);
 	st->count++;
 
-	st = get_state(next_state, 1);
-	check(st, "Failed to count next_state: %s", next_state);
-	st->count++;
+	nst = get_state(next_state, 1);
+	check(nst, "Failed to count next_state: %s", next_state);
+	nst->count++;
 
 	return 1;
 
@@ -204,4 +204,23 @@ error:
 	if(trans->next_state) free(trans->next_state);
 
 	return NULL;
+}
+
+void MC_calc_p()
+{
+	unsigned int r = 0, c = 0, st_count = 0;
+	MC_Transition *t = NULL;
+
+	for(c = 0 ; c < TRANS_STATE_TAB_W ; c++){
+		for(r = 0 ; r < TRANS_STATE_TAB_H ; r++){
+
+			for(t = trans_state_tab[c][r] ; t ; t = t->next){
+				st_count = MC_get_count(t->state);
+
+				if(0 == st_count) continue;
+				
+				t->p = (float) t->count / (float) st_count;
+			}
+		}
+	}
 }
