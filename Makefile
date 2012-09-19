@@ -16,7 +16,7 @@ SO_TARGET=$(patsubst %.a, %.so, $(TARGET))
 
 all: $(TARGET) $(SO_TARGET) exec tests
 
-exec: $(EXECOBJECTS) 
+exec: build $(EXECOBJECTS) 
 	$(CC) -o bin/$@ $(EXECOBJECTS)
 
 dev: CFLAGS=-g -Isrc -Wall -Wextra $(OPTFLAGS)
