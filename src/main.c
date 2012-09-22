@@ -114,7 +114,10 @@ int main(int argc, char *argv[])
 	assert(r && "MC_init failed");
 
 	r = train_on_file("corpus/hg1.txt", 3);
-	assert(r && "Train on file failed");
+	assert(r && "Train on hg file failed");
+
+	r = train_on_file("corpus/dict.txt", 3);
+	assert(r && "Train on dict file failed");
 
 	while((fgets(line, MAX_LINE, stdin)) != NULL){
 		r = print_state_p(line, 3);	
