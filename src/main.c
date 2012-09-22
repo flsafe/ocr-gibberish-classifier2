@@ -82,9 +82,9 @@ int print_state_p(char *line, int state_len){
 		t = MC_lookup(state, next_state, 0);
 
 		if (NULL == t){
-			printf("P(%s, %s) = %f\n", state, next_state, 0.0f);	
+			printf("P('%s', '%s') = %f\n", state, next_state, 0.0f);	
 		} else {
-			printf("P(%s, %s) = %f\n", state, next_state, t->p);
+			printf("P('%s', '%s') = %f\n", state, next_state, t->p);
 		}
 
 		tmp = state;
@@ -117,6 +117,15 @@ int main(int argc, char *argv[])
 	assert(r && "Train on hg file failed");
 
 	r = train_on_file("corpus/dict.txt", 3);
+	assert(r && "Train on dict file failed");
+
+	r = train_on_file("corpus/huckle.txt", 3);
+	assert(r && "Train on dict file failed");
+
+	r = train_on_file("corpus/tom.txt", 3);
+	assert(r && "Train on dict file failed");
+
+	r = train_on_file("corpus/alice.txt", 3);
 	assert(r && "Train on dict file failed");
 
 	while((fgets(line, MAX_LINE, stdin)) != NULL){
