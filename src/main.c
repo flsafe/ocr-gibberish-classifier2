@@ -7,6 +7,9 @@
 
 #define MAX_LINE 1023
 
+typedef float (*f_func)(char *state, char *next_state, int state_len);
+typedef float (*g_func)(char *state, char *next_state, int state_len);
+
 void shift(char *state, int c, char *next_state, int state_len){
 	memmove(next_state, state + 1, state_len - 1);
 	next_state[state_len - 1] = c;
@@ -105,6 +108,59 @@ error:
 	return 0;
 }
 
+float miss_p_f(MC_Transition t)
+{
+	return 0;
+}
+
+float miss_p_g(MC_Transition t)
+{
+	return 0;
+}
+
+float miss_p_metric(char *line, int state_len, f_func ff, g_func gf)
+{
+	float x = 0.0f, y = 0.0f;
+	int i = 0;
+	char c = 0;
+	char *state = NULL, *next_state = NULL, *tmp = NULL;
+
+	state = calloc(state_len + 1, sizeof(char));
+	check_mem(state);
+	next_state = calloc(state_len + 1, sizeof(char));
+	check_mem(next_state);
+
+	for(i = 0 ; i < state_len ; i++){
+		state[i] = next_state[i] = ' ';
+	}
+
+	for(i = 0 ; line[i] ; i++){
+		c = line[i];		
+
+		if(iscntrl(c)) c = ' ';
+
+		shift(state, c, next_state, state_len);
+
+		y = y + ff(state, next_state, state_len);
+		x = x + gf(state, next_state, state_len);
+
+		tmp = state;
+		state = next_state;
+		next_state = tmp;
+	}
+
+	if(0.0f == x) return 0.0f;
+
+	return y/x;
+	
+error:
+
+	if(state) free(state);
+	if(next_state) free(next_state);
+
+	return 0.0f;
+}
+
 int main(int argc, char *argv[])
 {
 	int r = 0;
@@ -129,6 +185,9 @@ int main(int argc, char *argv[])
 	assert(r && "Train on dict file failed");
 
 	while((fgets(line, MAX_LINE, stdin)) != NULL){
+		r = print_state_p(line, 3);	
+		assert(r && "Failed to print state transition probabilities");
+
 		r = print_state_p(line, 3);	
 		assert(r && "Failed to print state transition probabilities");
 	}
