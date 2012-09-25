@@ -81,8 +81,6 @@ char *test_add_trans()
 
 char *test_get_count()
 {
-	MC_State *s = NULL;
-
 	MC_init(3);
 
 	MC_add_trans("123", "456");
