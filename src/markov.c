@@ -5,12 +5,6 @@
 #include "debug.h"
 #include "markov.h"
 
-enum
-{
-	TRANS_STATE_TAB_W = 2047,         /* The width of the transition state hash table. */
-	TRANS_STATE_TAB_H = 2047,         /* The hieght of the transition state hash table. */
-	STATE_TAB       = 2047            /* Size of the state hash table */
-};
 
 MC_Transition ***trans_state_tab;      /* Transition state hash table, used to define a transition hash table. */
 
@@ -204,6 +198,11 @@ error:
 	if(trans->next_state) free(trans->next_state);
 
 	return NULL;
+}
+
+MC_Transition **MC_lookup_column(char *state)
+{
+	return trans_state_tab[ hash(state, TRANS_STATE_TAB_W) ];
 }
 
 void MC_calc_p()

@@ -4,6 +4,13 @@
 typedef struct MC_Transition MC_Transition;
 typedef struct MC_State MC_State;
 
+enum
+{
+	TRANS_STATE_TAB_W = 2047,         /* The width of the transition state hash table. */
+	TRANS_STATE_TAB_H = 2047,         /* The hieght of the transition state hash table. */
+	STATE_TAB         = 2047            /* Size of the state hash table */
+};
+
 struct MC_Transition
 {
 	int count;           /* The number of times the initial state transitions to the transition state. */ 
@@ -33,6 +40,8 @@ int MC_add_trans(char *state, char *next_state);        /* Add transition from s
 int MC_get_count(char *state);                          /* Get the count for this state */
 
 MC_Transition *MC_lookup(char *state, char *next_state, int create); /* Retrieve the transition between state and next_state, create if specified. */ 
+
+MC_Transition **MC_lookup_column(char *state);          /* Get the column of transitions the state maps to. */
 
 void MC_calc_p(); /* Calculate the probabilities for each transition */
 

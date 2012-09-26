@@ -108,14 +108,32 @@ error:
 	return 0;
 }
 
-float miss_p_f(MC_Transition t)
+float miss_p_f(char *state, char *next_state, int state_len) 
 {
-	return 0;
+	MC_Transition **col = NULL;
+	MC_Transition *t = NULL;
+	int i = 0;
+	float z = 1.0f, p_miss = 0.0f;
+
+	t = MC_lookup(state, next_state, 0);
+	if(t){
+		col = MC_lookup_column(state);
+		for(i = 0 ; i < TRANS_STATE_TAB_W ; i++){
+			for(t = col[i] ; t ; t = t->next){
+				if(0 == strncmp(t->state, state, state_len) && 0 != strncmp(t->next_state, next_state, state_len)){
+					p_miss += t->p;
+				}
+			}			
+		}
+		return p_miss;
+	} else {
+		return z;
+	}
 }
 
-float miss_p_g(MC_Transition t)
+float miss_p_g(char *state, char *next_state, int state_len)
 {
-	return 0;
+	return 1;
 }
 
 float miss_p_metric(char *line, int state_len, f_func ff, g_func gf)
@@ -165,31 +183,28 @@ int main(int argc, char *argv[])
 {
 	int r = 0;
 	char line[MAX_LINE+1];
+	int w = 3;
 
-	r = MC_init(3);
+	r = MC_init(w);
 	assert(r && "MC_init failed");
 
-	r = train_on_file("corpus/hg1.txt", 3);
+	r = train_on_file("corpus/hg1.txt", w);
 	assert(r && "Train on hg file failed");
 
-	r = train_on_file("corpus/dict.txt", 3);
+	r = train_on_file("corpus/dict.txt", w);
 	assert(r && "Train on dict file failed");
 
-	r = train_on_file("corpus/huckle.txt", 3);
+	r = train_on_file("corpus/huckle.txt", w);
 	assert(r && "Train on dict file failed");
 
-	r = train_on_file("corpus/tom.txt", 3);
+	r = train_on_file("corpus/tom.txt", w);
 	assert(r && "Train on dict file failed");
 
-	r = train_on_file("corpus/alice.txt", 3);
+	r = train_on_file("corpus/alice.txt", w);
 	assert(r && "Train on dict file failed");
 
 	while((fgets(line, MAX_LINE, stdin)) != NULL){
-		r = print_state_p(line, 3);	
-		assert(r && "Failed to print state transition probabilities");
-
-		r = print_state_p(line, 3);	
-		assert(r && "Failed to print state transition probabilities");
+		printf("Miss probability metric: %f\n", miss_p_metric(line, w, miss_p_f, miss_p_g));
 	}
 
 	MC_destroy();
